@@ -6,17 +6,18 @@ import CloseIcon from "./images/closeicon.png";
 import plop2 from "./sounds/plop3.mp3";
 import plop1 from "./sounds/plop4.mp3";
 import StaffIcon from "./images/staff.png";
-
+import axios from "axios";
 import { sendMessage } from "./AI";
 
 
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
   
   body {
-    font-family: 'Satoshi', sans-serif;
-    color: #E0E7FF; // Light text color for contrast
+    font-family: 'Space Grotesk', sans-serif;
+    color: #E0E7FF;
+    background: #0F0F23;
   }
 `;
 
@@ -37,39 +38,39 @@ const ChatbotContainer = styled.div`
 
 const pulse = keyframes`
   0% {
-    box-shadow: 0 0 0 0 rgba(64, 196, 255, 0.7);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 15px rgba(64, 196, 255, 0);
+    box-shadow: 0 0 0 20px rgba(99, 102, 241, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(64, 196, 255, 0);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
   }
 `;
 
 const ChatbotButton = styled.button`
-  width: 64px;
-  height: 64px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  background-color: #64C4FF; // Deep space blue
-  border: 2px solid #64C4FF; // Cosmic blue border
+  background: linear-gradient(145deg, #6366F1, #4F46E5);
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(64, 196, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
 
-  animation: ${pulse} 1.5s ease-in-out 0s infinite;
+  animation: ${pulse} 2s infinite;
 
   &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(64, 196, 255, 0.4);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
   }
 
   img {
-    width: 52px;
-    height: 52px;
+    width: 40px;
+    height: 40px;
     transition: transform 0.3s ease;
   }
 
@@ -78,16 +79,14 @@ const ChatbotButton = styled.button`
     `
     img {
       transform: rotate(90deg);
-      width: 32px;
-      height: 32px;
     }
+    background: linear-gradient(145deg, #4F46E5, #4338CA);
     animation: none;
-    background-color: #2C5282; // Darker blue when open
   `}
 
   @media (max-width: 768px) {
-    width: 56px;
-    height: 56px;
+    width: 60px;
+    height: 60px;
     position: absolute;
     bottom: 20px;
     right: 20px;
@@ -96,20 +95,21 @@ const ChatbotButton = styled.button`
 
 const ChatWindow = styled.div`
   position: absolute;
-  bottom: 80px;
+  bottom: 90px;
   right: 0;
-  width: 400px;
+  width: 380px;
   height: 600px;
-  background-color: #1A2233; // Dark space background
-  border-radius: 20px;
+  background: linear-gradient(180deg, #1E1E3F 0%, #2D3748 100%);
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   transform: ${(props) =>
     props.isOpen ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)"};
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
   pointer-events: ${(props) => (props.isOpen ? "all" : "none")};
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
   @media (max-width: 768px) {
     width: 100%;
@@ -125,15 +125,15 @@ const ChatWindow = styled.div`
 `;
 
 const ChatHeader = styled.div`
-  background-color: #2C5282; // Deep space blue
+  background: linear-gradient(90deg, #4338CA 0%, #6366F1 100%);
   color: #E0E7FF;
-  padding: 16px 24px;
+  padding: 20px 24px;
   font-weight: 600;
   display: flex;
   align-items: center;
   font-size: 18px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
 
   @media (max-width: 768px) {
     border-radius: 0;
@@ -148,15 +148,16 @@ const HeaderContent = styled.div`
 
 const HeaderImage = styled.div`
   position: relative;
-  width: 40px;
-  height: 40px;
-  margin-right: 12px;
+  width: 48px;
+  height: 48px;
+  margin-right: 16px;
 
   img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    border: 2px solid #E0E7FF;
   }
 
   &::after {
@@ -164,10 +165,11 @@ const HeaderImage = styled.div`
     position: absolute;
     bottom: 2px;
     right: 2px;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: ${(props) => (props.isOnline ? "#4ADE80" : "#F87171")};
     border-radius: 50%;
+    border: 2px solid #E0E7FF;
   }
 `;
 
@@ -177,22 +179,9 @@ const HeaderText = styled.div`
 `;
 
 const OnlineStatus = styled.span`
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   color: #A5B4FC;
-`;
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  color: #E0E7FF;
-  font-size: 24px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.1);
-  }
 `;
 
 const ChatMessages = styled.div`
@@ -201,7 +190,16 @@ const ChatMessages = styled.div`
   padding: 24px;
   display: flex;
   flex-direction: column;
-  background-color: #0F172A; // Dark space background
+  background: linear-gradient(180deg, #1A1A35 0%, #2D3748 100%);
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #4F46E5;
+    border-radius: 3px;
+  }
 
   @media (max-width: 768px) {
     padding-bottom: 80px;
@@ -209,31 +207,34 @@ const ChatMessages = styled.div`
 `;
 
 const Message = styled.div`
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: ${(props) => (props.isUser ? "row-reverse" : "row")};
   align-items: flex-start;
 
   .avatar {
-    background: #2C5282;
+    background: linear-gradient(145deg, #6366F1, #4F46E5);
     padding: 3px;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    margin: ${(props) => (props.isUser ? "0 0 0 12px" : "0 12px 0 0")};
+    margin: ${(props) => (props.isUser ? "0 0 0 16px" : "0 16px 0 0")};
   }
 
   .content {
-    background-color: ${(props) => (props.isUser ? "#4C51BF" : "#1E3A8A")};
-    padding: 12px 16px;
+    background: ${(props) =>
+      props.isUser
+        ? "linear-gradient(145deg, #6366F1, #4F46E5)"
+        : "linear-gradient(145deg, #3730A3, #312E81)"};
+    padding: 14px 18px;
     border-radius: ${(props) =>
-      props.isUser ? "18px 18px 0 18px" : "0 18px 18px 18px"};
+      props.isUser ? "20px 20px 0 20px" : "0 20px 20px 20px"};
     max-width: 70%;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    box-shadow: 0 1px 2px rgba(64, 196, 255, 0.1);
-    font-size: 14px;
-    line-height: 1.5;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 15px;
+    line-height: 1.6;
     color: #E0E7FF;
   }
 `;
@@ -241,57 +242,58 @@ const Message = styled.div`
 const InputForm = styled.form`
   display: flex;
   padding: 20px 24px;
-  background-color: #1A2233; // Dark space background
-  border-top: 1px solid #2C5282;
+  background: linear-gradient(0deg, #1E1E3F 0%, #2D3748 100%);
+  border-top: 1px solid #4F46E5;
 
   @media (max-width: 768px) {
     position: relative;
-    padding: 12px;
+    padding: 16px;
   }
 `;
 
 const Input = styled.textarea`
   flex-grow: 1;
   border: none;
-  padding: 12px 16px;
-  border-radius: 9999px;
-  margin-right: 12px;
-  font-size: 14px;
-  background-color: #2C5282;
+  padding: 14px 18px;
+  border-radius: 20px;
+  margin-right: 16px;
+  font-size: 15px;
+  background: rgba(79, 70, 229, 0.1);
   color: #E0E7FF;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   resize: none;
-  height: 20px;
+  height: 24px;
   overflow-y: auto;
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #64C4FF;
-    background-color: #1E3A8A;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    background: rgba(79, 70, 229, 0.2);
   }
 `;
 
 const SendButton = styled.button`
-  background-color: #4C51BF;
+  background: linear-gradient(145deg, #6366F1, #4F46E5);
   color: #E0E7FF;
   border: none;
   border-radius: 50%;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 18px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  font-size: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    transform: scale(1.05);
-    background-color: #5A67D8;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
   }
 
   &:disabled {
-    background-color: #4A5568;
+    background: linear-gradient(145deg, #4A5568, #2D3748);
     cursor: not-allowed;
   }
 `;
@@ -305,16 +307,16 @@ const LoadingSpinner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 16px 0;
+  margin: 20px 0;
 
   span {
-    width: 8px;
-    height: 8px;
-    margin: 0 4px;
-    background-color: #64C4FF;
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: #6366F1;
     border-radius: 50%;
     display: inline-block;
-    animation: ${loadingAnimation} 1s infinite ease-in-out both;
+    animation: ${loadingAnimation} 1.4s infinite ease-in-out both;
   }
 
   span:nth-child(1) {
@@ -326,30 +328,29 @@ const LoadingSpinner = styled.div`
   }
 `;
 
-
 const TalkToHumanButton = styled.button`
-  background-color: #4C51BF;
+  background: linear-gradient(145deg, #6366F1, #4F46E5);
   color: #E0E7FF;
   border: none;
   border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 14px;
+  padding: 12px 24px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 16px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  margin-top: 20px;
   align-self: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: #5A67D8;
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
   }
 `;
 
-
 const BoldText = styled.span`
   font-weight: bold;
-  color: #64C4FF;
+  color: #A5B4FC;
 `;
 
 const App = () => {
@@ -361,15 +362,14 @@ const App = () => {
   const [isBotUnsure, setIsBotUnsure] = useState(false);
   const [isHumanChat, setIsHumanChat] = useState(false);
   const [currentStaff, setCurrentStaff] = useState(null);
+  const [chatId, setChatId] = useState(null);
   const messagesEndRef = useRef(null);
-    const [userId, setUserId] = useState(null);
 
   const plop1SoundRef = useRef(new Audio(plop1));
   const plop2SoundRef = useRef(new Audio(plop2));
 
   const staffNames = [
-    "Emma", "Liam", "Olivia", "Noah", "Ava",
-    "Ethan", "Sophia", "Mason", "Isabella", "William"
+    "Martin S"
   ];
 
   const scrollToBottom = useCallback(() => {
@@ -403,26 +403,57 @@ const App = () => {
   useEffect(() => {
     const updateParentHeight = () => {
       const height = document.body.scrollHeight;
-      window.parent.postMessage({ type: 'resize', height }, '*');
+      window.parent.postMessage({ type:'resize', height }, '*');
     };
     updateParentHeight();
     window.addEventListener('resize', updateParentHeight);
     return () => window.removeEventListener('resize', updateParentHeight);
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isHumanChat && !chatId) {
+      initChat();
+    }
+  }, [isHumanChat]);
+
+  useEffect(() => {
+    if (chatId && isHumanChat) {
+      const interval = setInterval(loadMessages, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [chatId, isHumanChat]);
+
   const updateParentSize = (isOpen) => {
-    const height = isOpen ? '600' : '64'; // Adjust height based on whether chat is open
-    window.parent.postMessage({ type: 'resize', height }, '*');
+    const height = isOpen ? '600' : '64';
+    window.parent.postMessage({ type:'resize', height }, '*');
   };
   
   const toggleChat = () => {
     setIsOpen(prev => {
-      updateParentSize(!prev); // Update size when toggling
+      updateParentSize(!prev);
       return !prev;
     });
   };
 
-  
+  const initChat = async () => {
+    try {
+      const response = await axios.post('https://api2.asfaltios.com/api2/chats');
+      setChatId(response.data.chatId);
+    } catch (error) {
+      console.error('Error initializing chat:', error);
+    }
+  };
+
+  const loadMessages = async () => {
+    if (!chatId) return;
+    try {
+      const response = await axios.get(`https://api2.asfaltios.com/api2/messages/${chatId}`);
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -432,11 +463,20 @@ const App = () => {
     setInput("");
   
     if (isHumanChat) {
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { role: "user", content: userMessage },
-        { role: "human", content: `Thank you for your message. ${currentStaff} will respond shortly.` }
-      ]);
+      if (!chatId) {
+        console.error('Chat not initialized');
+        return;
+      }
+      try {
+        await axios.post('https://api2.asfaltios.com/api2/messages', {
+          chatId,
+          sender: 'User',
+          content: userMessage
+        });
+        loadMessages();
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
     } else {
       await sendMessage(
         userMessage,
@@ -454,10 +494,7 @@ const App = () => {
     setCurrentStaff(randomStaff);
     setIsHumanChat(true);
     setIsBotUnsure(false);
-    setMessages(prevMessages => [
-      ...prevMessages,
-      { role: "human", content: `You're now connected with ${randomStaff}. How can I assist you today?` }
-    ]);
+    initChat();
   };
 
   useEffect(() => {
@@ -468,13 +505,12 @@ const App = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && e.shiftKey) return;
-    if (e.key === "Enter" && isLoading === false) {
+    if (e.key === "Enter" && !isLoading) {
       e.preventDefault();
       handleSendMessage(e);
     }
   };
 
-  
   const processMessageContent = (content) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = content.split(/(\*\*.*?\*\*|\*.*?\*|•.*?(?=\n|$))/g);
@@ -507,59 +543,46 @@ const App = () => {
       <GlobalStyle />
       <ChatbotContainer>
         <ChatbotButton onClick={toggleChat} isOpen={isOpen}>
-          <img
-            src={isOpen ? CloseIcon : MenuIcon}
-            alt={isOpen ? "Close" : "Chat"}
-          />
+          <img src={isOpen ? CloseIcon : MenuIcon} alt={isOpen ? "Close" : "Chat"} />
         </ChatbotButton>
         <ChatWindow isOpen={isOpen}>
-<ChatHeader>
-  <HeaderContent>
-    <HeaderImage isOnline={isAIOnline}>
-      <img src={isHumanChat ? StaffIcon : RobotIcon} alt={isHumanChat ? "Staff" : "ASFALTIOS AI"} />
-    </HeaderImage>
-    <HeaderText>
-      <span>{isHumanChat ? currentStaff : "Asfaltios AI"}</span>
-      <OnlineStatus>{isAIOnline ? "Online" : "Offline"}</OnlineStatus>
-    </HeaderText>
-  </HeaderContent>
-  <CloseButton onClick={toggleChat}>&times;</CloseButton>
-</ChatHeader>
- <ChatMessages>
-  {messages.map((message, index) => (
-    <Message key={index} isUser={message.role === "user"}>
-      {(message.role === "bot" || message.role === "human") && (
-        <img 
-          className="avatar" 
-          src={message.role === "bot" ? RobotIcon : StaffIcon} 
-          alt={message.role === "bot" ? "ASFALTIOS AI" : "Staff"}
-        />
-      )}
-      <div className="content">
-        {processMessageContent(message.content)}
-      </div>
-    </Message>
-  ))}
-  {isLoading && (
-    <LoadingSpinner>
-      <span></span>
-      <span></span>
-      <span></span>
-    </LoadingSpinner>
-  )}
-  {isBotUnsure && !isHumanChat && (
-    <TalkToHumanButton onClick={handleTalkToHuman}>
-      Talk to a Human
-    </TalkToHumanButton>
-  )}
-  <div ref={messagesEndRef} />
-</ChatMessages>
+          <ChatHeader>
+            <HeaderContent>
+              <HeaderImage isOnline={isAIOnline}>
+                <img src={isHumanChat ? StaffIcon : RobotIcon} alt={isHumanChat ? "Staff" : "ASFALTIOS AI"} />
+              </HeaderImage>
+              <HeaderText>
+                <span>{isHumanChat ? currentStaff : "ASFALTIOS AI"}</span>
+                <OnlineStatus>{isAIOnline ? "Online" : "Offline"}</OnlineStatus>
+              </HeaderText>
+            </HeaderContent>
+          </ChatHeader>
+          <ChatMessages>
+            {messages.map((message, index) => (
+              <Message key={index} isUser={message.sender === "User" || message.role === "user"}>
+                <div className="content">{processMessageContent(message.content)}</div>
+              </Message>
+            ))}
+            {isLoading && (
+              <LoadingSpinner>
+                <span></span>
+                <span></span>
+                <span></span>
+              </LoadingSpinner>
+            )}
+            {isBotUnsure && !isHumanChat && (
+              <TalkToHumanButton onClick={handleTalkToHuman}>
+                Talk to a Human
+              </TalkToHumanButton>
+            )}
+            <div ref={messagesEndRef} />
+          </ChatMessages>
           <InputForm onSubmit={handleSendMessage}>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Spør om Asfaltios..."
+              placeholder="Type a message..."
             />
             <SendButton type="submit" disabled={isLoading}>
               ➤
