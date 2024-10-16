@@ -15,7 +15,6 @@ const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
   
   body {
-    font-family: 'Space Grotesk', sans-serif;
     color: #E0E7FF;
     background: #0F0F23;
   }
@@ -157,7 +156,6 @@ const HeaderImage = styled.div`
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #E0E7FF;
   }
 
   &::after {
