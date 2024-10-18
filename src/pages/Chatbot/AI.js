@@ -1,7 +1,7 @@
 import axios from 'axios';
 import asfaltiosInfo from './info.txt';
 
-const API_KEY = 'AIzaSyA4MrSWYrWKiY2FOoi1l4Hka6zfAn4UUsE';
+const API_KEY = 'AIzaSyD-OSDJzUk2YQIru2FpDct9fRwOk9IkS5c';
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 const SYSTEM_PROMPT = (previousMessages) => `
